@@ -1,0 +1,13 @@
+// Spring Roo 1.2.0.RELEASE [rev 39eb957] log opened at 2011-12-20 01:31:25
+hint
+project --topLevelPackage kr.miraesoft.simplebook
+jpa setup --provider HIBERNATE --database H2_IN_MEMORY 
+entity jpa --class ~.domain.Book --testAutomatically 
+field string --fieldName name --sizeMin 2 --sizeMax 50 --notNull 
+field string --fieldName author --sizeMax 5
+web jsf setup
+web jsf all --package ~.web
+logging setup --level INFO
+quit
+// Spring Roo 1.2.0.RELEASE [rev 39eb957] log closed at 2011-12-20 01:43:50
+// Spring Roo 1.2.0.RELEASE [rev 39eb957] log opened at 2011-12-20 01:47:13
