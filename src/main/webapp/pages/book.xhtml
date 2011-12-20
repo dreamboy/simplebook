@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition template="../templates/layout.xhtml">
+    <ui:define name="content">
+        <p:growl id="messages" showDetail="false" />
+        <h:form prependId="false">
+            <p:panel id="data" toggleable="true" toggleSpeed="250">
+                <f:facet name="header">
+                    <h:outputText value="#{bookBean.name}" />
+                </f:facet>
+                <h:outputFormat id="noRecordsFound" value="#{messages.label_no_records_found}" rendered="#{!bookBean.dataVisible}">
+                   <f:param value="Books" />
+                </h:outputFormat>
+                <p:dataTable id="list" value="#{bookBean.allBooks}" var="book" rendered="#{bookBean.dataVisible}" resizableColumns="false" paginator="true" paginatorTemplate=" {CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowsPerPageTemplate="5,10,25,50" rows="10">
+                    <p:columns value="#{bookBean.columns}" var="column" columnIndexVar="colIndex">
+                        <f:facet name="header">
+                            <h:outputText value="#{applicationBean.getColumnName(column)}" />
+                        </f:facet>
+                        <h:outputText value="#{book[column]}" />
+                    </p:columns>
+                    <p:column styleClass="action-column">
+                        <f:facet name="header">
+                            <h:outputText value="Actions" />
+                        </f:facet>
+                        <p:commandButton id="viewButton" icon="ui-icon-zoomin" update="viewDialog" oncomplete="viewDialog.show()" title="#{messages.label_view}">
+                            <f:setPropertyActionListener value="#{book}" target="#{bookBean.book}" />
+                        </p:commandButton>
+                        <p:tooltip for="viewButton" value="#{messages.label_view}" showEffect="fade" hideEffect="fade" />
+                        <p:commandButton id="editButton" icon="ui-icon-pencil" action="#{bookBean.onEdit}" update="editDialog" oncomplete="editDialog.show()" title="#{messages.label_edit}">
+                            <f:setPropertyActionListener value="#{book}" target="#{bookBean.book}" />
+                        </p:commandButton>
+                        <p:tooltip for="editButton" value="#{messages.label_edit}" showEffect="fade" hideEffect="fade" />
+                        <p:commandButton id="deleteButton" icon="ui-icon-trash" oncomplete="deleteDialog.show()" title="#{messages.label_delete}" >
+                            <f:setPropertyActionListener value="#{book}" target="#{bookBean.book}" />
+                        </p:commandButton>
+                        <p:tooltip for="deleteButton" value="#{messages.label_delete}" showEffect="fade" hideEffect="fade" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+        <p:dialog id="createDialog" header="#{messages.label_create} Book" modal="true" widgetVar="createDialog" dynamic="true" visible="#{bookBean.createDialogVisible}" resizable="true" maximizable="true" showEffect="fade" hideEffect="explode">
+            <p:ajax event="close" update="data" listener="#{bookBean.handleDialogClose}" />
+            <h:form id="createForm" enctype="multipart/form-data">
+                <h:panelGrid id="createPanelGrid" columns="3" binding="#{bookBean.createPanelGrid}" styleClass="dialog" columnClasses="col1,col2,col3" />
+                <p:commandButton value="#{messages.label_save}" action="#{bookBean.persist}" update="createPanelGrid messages" />
+                <p:commandButton value="#{messages.label_close}" onclick="createDialog.hide()" type="button" />
+            </h:form>
+        </p:dialog>
+        <p:dialog id="editDialog" header="#{messages.label_edit} Book" modal="true" widgetVar="editDialog" dynamic="true" resizable="true" maximizable="true" showEffect="fade" hideEffect="explode">
+            <p:ajax event="close" update="data" listener="#{bookBean.handleDialogClose}" />
+            <h:form id="editForm" enctype="multipart/form-data">
+                <h:panelGrid id="editPanelGrid" columns="3" binding="#{bookBean.editPanelGrid}" styleClass="dialog" columnClasses="col1,col2,col3" />
+                <p:commandButton value="#{messages.label_save}" action="#{bookBean.persist}" update="editPanelGrid messages" />
+                <p:commandButton value="#{messages.label_close}" onclick="editDialog.hide()" type="button" />
+            </h:form>
+        </p:dialog>
+        <p:dialog id="viewDialog" header="#{messages.label_view} Book" modal="true" widgetVar="viewDialog" dynamic="true" resizable="true" maximizable="true" showEffect="fade" hideEffect="explode">
+            <h:form id="viewForm" enctype="multipart/form-data">
+                <h:panelGrid id="viewPanelGrid" columns="2" binding="#{bookBean.viewPanelGrid}" styleClass="dialog" columnClasses="col1,col2" />
+                <p:commandButton value="#{messages.label_close}" onclick="viewDialog.hide()" type="button" />
+            </h:form>
+        </p:dialog>
+        <p:confirmDialog id="deleteDialog" widgetVar="deleteDialog" message="#{messages.label_delete_record}" showEffect="fade" hideEffect="explode" header="#{messages.label_confirm_deletion}" severity="alarm">
+            <h:form id="deleteForm">
+                <p:commandButton value="#{messages.label_yes}" action="#{bookBean.delete}" update="data" oncomplete="deleteDialog.hide()" />
+                <p:commandButton value="#{messages.label_no}" onclick="deleteDialog.hide()" type="button" />
+            </h:form>
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>
+</html>
